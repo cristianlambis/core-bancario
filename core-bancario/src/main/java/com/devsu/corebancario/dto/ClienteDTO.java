@@ -1,41 +1,23 @@
-package com.devsu.corebancario.model;
+package com.devsu.corebancario.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.List;
 
+public class ClienteDTO {
 
-@Entity
-@Table(name = "personas")
-public class Persona {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @Column(name = "nombre")
   private String nombre;
-
-  @Column(name = "genero")
   private String genero;
-
-  @Column(name = "edad")
   private Integer edad;
-
-  @Column(name = "identificacion")
   private String identificacion;
-
-  @Column(name = "direccion")
   private String direccion;
-
-  @Column(name = "telefono")
   private String telefono;
+  private String clienteId;
+  private List<CuentaDTO> cuentas;
 
+  public ClienteDTO() {
+  }
 
-  public Persona(Long id, String nombre, String genero, Integer edad, String identificacion,
+  public ClienteDTO(Long id, String nombre, String genero, Integer edad, String identificacion,
       String direccion, String telefono) {
     this.id = id;
     this.nombre = nombre;
@@ -44,9 +26,6 @@ public class Persona {
     this.identificacion = identificacion;
     this.direccion = direccion;
     this.telefono = telefono;
-  }
-
-  public Persona() {
   }
 
   public Long getId() {
@@ -103,5 +82,21 @@ public class Persona {
 
   public void setTelefono(String telefono) {
     this.telefono = telefono;
+  }
+
+  public String getClienteId() {
+    return clienteId;
+  }
+
+  public void setClienteId(String clienteId) {
+    this.clienteId = clienteId;
+  }
+
+  public List<CuentaDTO> getCuentas() {
+    return cuentas;
+  }
+
+  public void setCuentas(List<CuentaDTO> cuentas) {
+    this.cuentas = cuentas;
   }
 }
