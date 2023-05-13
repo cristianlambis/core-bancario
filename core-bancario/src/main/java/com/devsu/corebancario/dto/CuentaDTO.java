@@ -9,18 +9,14 @@ public class CuentaDTO {
   private String numeroCuenta;
   private String tipoCuenta;
   private String estado;
-
   private Double saldoInicial;
-  private Double saldo;
   private ClienteDTO cliente;
-
-  private Double totalDebitos;
-
-  private Double totalCreditos;
   private List<MovimientoDTO> movimientos;
+  private Double saldo;
+  private Double totalDebitos;
+  private Double totalCreditos;
 
   public CuentaDTO() {
-
   }
 
   public CuentaDTO(Long id, String numeroCuenta, String tipoCuenta, BigDecimal saldo) {

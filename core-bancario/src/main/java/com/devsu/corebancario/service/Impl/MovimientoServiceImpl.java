@@ -1,5 +1,6 @@
 package com.devsu.corebancario.service.Impl;
 
+import com.devsu.corebancario.exception.CoreBancarioSystemException;
 import com.devsu.corebancario.model.Cuenta;
 import com.devsu.corebancario.model.Movimiento;
 import com.devsu.corebancario.repository.MovimientoRepository;
@@ -9,10 +10,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MovimientoServiceImpl implements IMovimientoService {
+
+  private static final Logger logger = LogManager.getLogger(MovimientoServiceImpl.class);
 
   public static final String SALDO_NO_DISPONIBLE = "Saldo no disponible...";
 
@@ -24,32 +29,38 @@ public class MovimientoServiceImpl implements IMovimientoService {
 
   @Override
   public Optional<Object> crearMovimiento(Movimiento movimiento) {
-    double saldoTotal = 0;
-    final Cuenta cuenta = movimiento.getCuenta();
 
-    if (Objects.isNull(cuenta.getSaldoInicial())) {
-      return Optional.of(SALDO_NO_DISPONIBLE);
+    try {
+      double saldoTotal = 0;
+      final Cuenta cuenta = movimiento.getCuenta();
+
+      if (Objects.isNull(cuenta.getSaldoInicial())) {
+        return Optional.of(SALDO_NO_DISPONIBLE);
+      }
+
+      if (cuenta.getMovimientos().size() == 0) {
+        saldoTotal = hacerMovimiento(movimiento.getTipoMovimiento(), cuenta.getSaldoInicial(),
+            movimiento.getValor());
+      } else {
+        double saldoUltimoMovimiento = obtenerUltimoMovimiento(cuenta.getMovimientos());
+        saldoTotal = hacerMovimiento(movimiento.getTipoMovimiento(), saldoUltimoMovimiento,
+            movimiento.getValor());
+      }
+
+      if (saldoTotal < 0) {
+        return Optional.of(SALDO_NO_DISPONIBLE);
+      }
+
+      if (validarSaldoExcedido(cuenta.getMovimientos(), movimiento)) {
+        return Optional.of("Cupo diarío excedido...");
+      }
+
+      movimiento.setSaldo(saldoTotal);
+      logger.info("Saldo Total movimiento:  {}", saldoTotal);
+      return Optional.of(movimientoRepository.save(movimiento));
+    } catch (final Exception ex) {
+      throw new CoreBancarioSystemException(ex.getMessage(), ex.getCause());
     }
-
-    if (cuenta.getMovimientos().size() == 0) {
-      saldoTotal = hacerMovimiento(movimiento.getTipoMovimiento(), cuenta.getSaldoInicial(),
-          movimiento.getValor());
-    } else {
-      double saldoUltimoMovimiento = obtenerUltimoMovimiento(cuenta.getMovimientos());
-      saldoTotal = hacerMovimiento(movimiento.getTipoMovimiento(), saldoUltimoMovimiento,
-          movimiento.getValor());
-    }
-
-    if (saldoTotal < 0) {
-      return Optional.of(SALDO_NO_DISPONIBLE);
-    }
-
-    if (validarSaldoExcedido(cuenta.getMovimientos(), movimiento)) {
-      return Optional.of("Cupo diarío excedido...");
-    }
-
-    movimiento.setSaldo(saldoTotal);
-    return Optional.of(movimientoRepository.save(movimiento));
   }
 
   @Override
@@ -60,19 +71,6 @@ public class MovimientoServiceImpl implements IMovimientoService {
   @Override
   public List<Movimiento> obtenerMovimientos() {
     return movimientoRepository.findAll();
-  }
-
-  @Override
-  public Movimiento actualizarMovimiento(Long id, Movimiento movimiento) {
-    Movimiento movimientoExistente = movimientoRepository.findById(id).orElse(null);
-    if (movimientoExistente != null) {
-      movimientoExistente.setFecha(movimiento.getFecha());
-      movimientoExistente.setTipoMovimiento(movimiento.getTipoMovimiento());
-      movimientoExistente.setValor(movimiento.getValor());
-      movimientoExistente.setSaldo(movimiento.getSaldo());
-      return movimientoRepository.save(movimientoExistente);
-    }
-    return null;
   }
 
   @Override
@@ -109,21 +107,28 @@ public class MovimientoServiceImpl implements IMovimientoService {
   }
 
   private boolean validarSaldoExcedido(List<Movimiento> movimientoList, Movimiento movimiento) {
-    AtomicReference<Double> saldoTotalDia = new AtomicReference<>((double) 0);
-    List<Movimiento> movimientoLis =
-        movimientoList.stream()
-            .filter(m -> m.getFecha().isEqual(movimiento.getFecha())
-                && m.getTipoMovimiento().equalsIgnoreCase("Debito"))
-            .toList();
 
-    movimientoLis.forEach(mov -> {
-      saldoTotalDia.set(saldoTotalDia.get() + mov.getValor());
-    });
+    try {
+      final AtomicReference<Double> saldoTotalDia = new AtomicReference<>((double) 0);
+      final List<Movimiento> movimientoLis =
+          movimientoList.stream()
+              .filter(m -> m.getFecha().isEqual(movimiento.getFecha())
+                  && m.getTipoMovimiento().equalsIgnoreCase("Debito"))
+              .toList();
 
-    if (movimiento.getTipoMovimiento().equalsIgnoreCase("Debito")) {
-      saldoTotalDia.set(saldoTotalDia.get() + movimiento.getValor());
+      movimientoLis.forEach(mov -> {
+        saldoTotalDia.set(saldoTotalDia.get() + mov.getValor());
+      });
+
+      if (movimiento.getTipoMovimiento().equalsIgnoreCase("Debito")) {
+        saldoTotalDia.set(saldoTotalDia.get() + movimiento.getValor());
+      }
+
+      logger.info("Saldo total en la fecha: {} es : {}", movimiento.getFecha(),
+          saldoTotalDia.get());
+      return saldoTotalDia.get() >= 1000 ? Boolean.TRUE : Boolean.FALSE;
+    } catch (final Exception ex) {
+      throw new CoreBancarioSystemException(ex.getMessage(), ex.getCause());
     }
-
-    return saldoTotalDia.get() >= 1000 ? Boolean.TRUE : Boolean.FALSE;
   }
 }

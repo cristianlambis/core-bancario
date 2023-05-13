@@ -14,8 +14,10 @@ public class Cliente extends Persona {
 
   @Column(name = "cliente_id")
   private String clienteId;
+
   @Column(name = "contrasena")
   private String contrasena;
+
   @Column(name = "estado")
   private String estado;
 

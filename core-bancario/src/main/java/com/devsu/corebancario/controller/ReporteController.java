@@ -41,7 +41,12 @@ public class ReporteController {
     Cliente cliente = clienteService.obtenerMovimientosFiltradosPorClienteId(clienteId, fechaDesde,
         fechaHasta);
 
+    if (cliente == null) {
+      return ResponseEntity.notFound().build();
+    }
+
     ClienteDTO clienteDTO = new ClienteDTO();
+    clienteDTO.setId(cliente.getId());
     clienteDTO.setClienteId(cliente.getClienteId());
     clienteDTO.setNombre(cliente.getNombre());
     clienteDTO.setIdentificacion(cliente.getIdentificacion());
@@ -52,21 +57,12 @@ public class ReporteController {
       CuentaDTO cuentaDTO = new CuentaDTO();
       cuentaDTO.setId(cuenta.getId());
       cuentaDTO.setTipoCuenta(cuenta.getTipoCuenta());
-      cuentaDTO.setSaldo(cuenta.getSaldoInicial());
+      cuentaDTO.setEstado(cuenta.getEstado());
+      cuentaDTO.setNumeroCuenta(cuenta.getNumeroCuenta());
+      cuentaDTO.setSaldoInicial(cuenta.getSaldoInicial());
 
+      double saldoActual = cuenta.getSaldoInicial();
       List<MovimientoDTO> movimientosDTO = new ArrayList<>();
-
-      double totalCreditos = cuenta.getMovimientos()
-          .stream()
-          .filter(m -> "Credito".equals(m.getTipoMovimiento()))
-          .mapToDouble(Movimiento::getValor)
-          .sum();
-
-      double totalDebitos = cuenta.getMovimientos()
-          .stream()
-          .filter(m -> "Debito".equals(m.getTipoMovimiento()))
-          .mapToDouble(Movimiento::getValor)
-          .sum();
 
       for (Movimiento m : cuenta.getMovimientos()) {
         MovimientoDTO movimientoDto = new MovimientoDTO();
@@ -74,42 +70,38 @@ public class ReporteController {
         movimientoDto.setFecha(m.getFecha());
         movimientoDto.setTipoMovimiento(m.getTipoMovimiento());
         movimientoDto.setValor(m.getValor());
+
+        if ("Credito".equals(m.getTipoMovimiento())){
+          saldoActual += m.getValor();
+        }else if ("Debito".equals(m.getTipoMovimiento())){
+          saldoActual -=m.getValor();
+        }
+        movimientoDto.setSaldo(saldoActual);
         movimientosDTO.add(movimientoDto);
 
       }
-
       cuentaDTO.setMovimientos(movimientosDTO);
-      cuentaDTO.setTotalCreditos(totalCreditos);
-      cuentaDTO.setTotalDebitos(totalDebitos);
+      cuentaDTO.setTotalCreditos(cuenta.getMovimientos()
+          .stream()
+          .filter(m -> "Credito".equals(m.getTipoMovimiento()))
+          .mapToDouble(Movimiento::getValor)
+          .sum());
+      cuentaDTO.setTotalDebitos(cuenta.getMovimientos()
+          .stream()
+          .filter(m -> "Debito".equals(m.getTipoMovimiento()))
+          .mapToDouble(Movimiento::getValor)
+          .sum());
+      cuentaDTO.setSaldo(cuentaDTO.getSaldoInicial() + cuentaDTO.getTotalCreditos() - cuentaDTO.getTotalDebitos());
       cuentasDTO.add(cuentaDTO);
     }
 
     clienteDTO.setCuentas(cuentasDTO);
+    double saldoTotal = cuentasDTO.stream()
+        .mapToDouble(c -> c.getSaldoInicial() + c.getTotalCreditos() - c.getTotalDebitos())
+        .sum();
 
-    if (cliente == null) {
-      return ResponseEntity.notFound().build();
-    }
+    clienteDTO.setCuentas(cuentasDTO);
 
     return ResponseEntity.ok(clienteDTO);
   }
-
-
-
-
-        /*
-        Double totalCredito = c.getMovimientos()
-                    .stream()
-                    .filter(m -> (m.getFecha().isAfter(fechaDesde) || m.getFecha().isEqual(fechaDesde)) &&
-                            (m.getFecha().isBefore(fechaHasta) || m.getFecha().isEqual(fechaHasta))
-                            && "Credito".equals(m.getTipoMovimiento())).mapToDouble(movimiento -> movimiento.getValor()).sum();
-
-            Double totalDebito = c.getMovimientos()
-                    .stream()
-                    .filter(m -> (m.getFecha().isAfter(fechaDesde) || m.getFecha().isEqual(fechaDesde)) &&
-                            (m.getFecha().isBefore(fechaHasta) || m.getFecha().isEqual(fechaHasta))
-                            && "Debito".equals(m.getTipoMovimiento())).mapToDouble(movimiento -> movimiento.getValor()).sum();
-         */
-
-
 }
-

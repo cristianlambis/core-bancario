@@ -17,12 +17,6 @@ public class ReporteServiceImpl implements IReporteService {
   @Override
   public EstadoCuentaDTO ObtenerReportePorCliente(String clienteId, LocalDate fechaDesde,
       LocalDate fechaHasta) {
-    final Cliente cliente = clienteService.obtenerMovimientosFiltradosPorClienteId(clienteId,
-        fechaDesde, fechaHasta);
-
-    EstadoCuentaDTO estadoCuentaDTO = new EstadoCuentaDTO();
-    estadoCuentaDTO.setIdCliente(cliente.getClienteId());
-//        estadoCuentaDTO.setCuentas();
 
     return null;
 

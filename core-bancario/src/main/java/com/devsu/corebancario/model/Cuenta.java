@@ -23,14 +23,19 @@ public class Cuenta {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @Column(name = "numero_cuenta")
+
+  @Column(name = "numero_cuenta", nullable = false)
   private String numeroCuenta;
+
   @Column(name = "tipo_cuenta")
   private String tipoCuenta;
-  @Column(name = "saldo_inicial")
-  private Double saldoInicial;
+
   @Column(name = "estado")
   private String estado;
+
+  @Column(name = "saldo_inicial")
+  private Double saldoInicial;
+
 
   @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "cliente_id")

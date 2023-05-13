@@ -7,4 +7,6 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
 
     /*@Query("SELECT * FROM Cuenta WHERE cliente_id =:clienteId")
     List<Cuenta> obtenerCuentasPorCliente(@Param("clienteId") Long clienteId);*/
+
+    Cuenta findCuentaByNumeroCuenta(String numeroCuenta);
 }

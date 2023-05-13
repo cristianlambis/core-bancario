@@ -18,8 +18,6 @@ public interface IClienteService {
 
   Cliente actualizarCliente(Long id, Cliente cliente);
 
-  Cliente actualizarParcialmenteCliente(Long id, Map<String, Object> campos);
-
   Cliente obtenerClientePorClienteId(String clienteId);
 
   Cliente obtenerMovimientosFiltradosPorClienteId(String clienteId, LocalDate fechaDesde,

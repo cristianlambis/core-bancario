@@ -10,13 +10,14 @@ public interface ICuentaService {
 
   List<Cuenta> obtenerCuentas();
 
-  public Optional<Cuenta> obtenerCuentaPorId(Long id);
+  Optional<Cuenta> obtenerCuentaPorId(Long id);
+
+  Optional<Cuenta> obtenerCuentaPorNumeroCuenta(String numeroCuenta);
 
   Cuenta crearCuenta(Cuenta cuenta);
 
   Cuenta actualizarCuenta(Long id, Cuenta cuenta);
 
-  Cuenta actualizarParcialmenteCuenta(Long id, Map<String, Object> campos);
 
   void eliminarCuenta(Long id);
 

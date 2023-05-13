@@ -53,11 +53,11 @@ public class CuentaController {
   @PostMapping
   public ResponseEntity<Cuenta> crearCuenta(@RequestBody CuentaDTO cuentaDTO) {
 
-    final Cuenta cuentaSave = new Cuenta();
-    cuentaSave.setNumeroCuenta(cuentaDTO.getNumeroCuenta());
-    cuentaSave.setTipoCuenta(cuentaDTO.getTipoCuenta());
-    cuentaSave.setEstado(cuentaDTO.getEstado());
-    cuentaSave.setSaldoInicial(cuentaDTO.getSaldoInicial());
+    final Cuenta cuenta = new Cuenta();
+    cuenta.setNumeroCuenta(cuentaDTO.getNumeroCuenta());
+    cuenta.setTipoCuenta(cuentaDTO.getTipoCuenta());
+    cuenta.setEstado(cuentaDTO.getEstado());
+    cuenta.setSaldoInicial(cuentaDTO.getSaldoInicial());
 
     final Cliente cliente = clienteService.obtenerClientePorClienteId(
         cuentaDTO.getCliente().getClienteId());
@@ -66,30 +66,24 @@ public class CuentaController {
       return ResponseEntity.notFound().build();
     }
 
-    cuentaSave.setCliente(cliente);
-    Cuenta cuentaCreada = cuentaService.crearCuenta(cuentaSave);
+    cuenta.setCliente(cliente);
+    Cuenta cuentaCreada = cuentaService.crearCuenta(cuenta);
     return ResponseEntity.created(URI.create("/cuentas/" + cuentaCreada.getId()))
         .body(cuentaCreada);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<Cuenta> actualizarCuenta(@PathVariable("id") Long id,
-      @RequestBody Cuenta cuenta) {
+      @RequestBody CuentaDTO cuentaDTO) {
+    final Cuenta cuenta = new Cuenta();
+    cuenta.setNumeroCuenta(cuentaDTO.getNumeroCuenta());
+    cuenta.setTipoCuenta(cuentaDTO.getTipoCuenta());
+    cuenta.setEstado(cuentaDTO.getEstado());
+    cuenta.setSaldoInicial(cuentaDTO.getSaldoInicial());
     Cuenta cuentaActualizada = cuentaService.actualizarCuenta(id, cuenta);
     if (!Optional.ofNullable(cuentaActualizada).isPresent()) {
       return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.ok(cuentaActualizada);
-  }
-
-  @PatchMapping("/{id}")
-  public ResponseEntity<Cuenta> actualizarParcialmenteCuenta(@PathVariable("id") Long id,
-      @RequestBody Map<String, Object> campos) {
-    Optional<Cuenta> cuentaActual = cuentaService.obtenerCuentaPorId(id);
-    if (cuentaActual == null) {
-      return ResponseEntity.notFound().build();
-    }
-    Cuenta cuentaActualizada = cuentaService.actualizarParcialmenteCuenta(id, campos);
     return ResponseEntity.ok(cuentaActualizada);
   }
 
@@ -98,6 +92,4 @@ public class CuentaController {
     cuentaService.eliminarCuenta(id);
     return ResponseEntity.noContent().build();
   }
-
-
 }

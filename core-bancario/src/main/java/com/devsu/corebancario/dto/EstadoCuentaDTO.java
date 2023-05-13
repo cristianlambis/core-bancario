@@ -5,7 +5,7 @@ import java.util.List;
 public class EstadoCuentaDTO {
 
   private String clienteId;
-  private String nombreCliente;
+  private String nombre;
   private List<CuentaDTO> cuentas;
 
   public EstadoCuentaDTO() {
@@ -13,9 +13,8 @@ public class EstadoCuentaDTO {
 
   public EstadoCuentaDTO(String clienteId, String nombreCliente, List<CuentaDTO> cuentas) {
     this.clienteId = clienteId;
-    this.nombreCliente = nombreCliente;
+    this.nombre = nombreCliente;
     this.cuentas = cuentas;
-
   }
 
   public String getIdCliente() {
@@ -26,12 +25,12 @@ public class EstadoCuentaDTO {
     this.clienteId = clienteId;
   }
 
-  public String getNombreCliente() {
-    return nombreCliente;
+  public String getNombre() {
+    return nombre;
   }
 
-  public void setNombreCliente(String nombreCliente) {
-    this.nombreCliente = nombreCliente;
+  public void setNombre(String nombre) {
+    this.nombre = nombre;
   }
 
   public List<CuentaDTO> getCuentas() {
@@ -41,5 +40,4 @@ public class EstadoCuentaDTO {
   public void setCuentas(List<CuentaDTO> cuentas) {
     this.cuentas = cuentas;
   }
-
 }

@@ -1,5 +1,6 @@
 package com.devsu.corebancario.service.Impl;
 
+import com.devsu.corebancario.exception.CoreBancarioSystemException;
 import com.devsu.corebancario.model.Cliente;
 import com.devsu.corebancario.model.Movimiento;
 import com.devsu.corebancario.repository.ClienteRepository;
@@ -8,10 +9,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ClienteServiceImpl implements IClienteService {
+
+  private static final Logger logger = LogManager.getLogger(ClienteServiceImpl.class);
 
   private final ClienteRepository clienteRepository;
 
@@ -59,17 +64,7 @@ public class ClienteServiceImpl implements IClienteService {
 
   }
 
-  @Override
-  public Cliente actualizarParcialmenteCliente(Long id, Map<String, Object> campos) {
-    Cliente clienteActual = obtenerClientePorId(id).get();
-    for (Map.Entry<String, Object> entry : campos.entrySet()) {
-      String campo = entry.getKey();
-      Object valor = entry.getValue();
 
-    }
-    return clienteRepository.save(clienteActual);
-
-  }
 
   @Override
   public Cliente obtenerClientePorClienteId(String clienteId) {
@@ -79,20 +74,27 @@ public class ClienteServiceImpl implements IClienteService {
   @Override
   public Cliente obtenerMovimientosFiltradosPorClienteId(String clienteId, LocalDate fechaDesde,
       LocalDate fechaHasta) {
-    final Cliente cliente = this.obtenerClientePorClienteId(clienteId);
 
-    cliente.getCuentas().forEach(c -> {
-      List<Movimiento> movimientoList =
-          c.getMovimientos()
-              .stream()
-              .filter(m -> (m.getFecha().isAfter(fechaDesde) || m.getFecha().isEqual(fechaDesde)) &&
-                  (m.getFecha().isBefore(fechaHasta) || m.getFecha().isEqual(fechaHasta)))
-              .toList();
+    try {
+      final Cliente cliente = this.obtenerClientePorClienteId(clienteId);
 
-      c.setMovimientos(movimientoList);
+      cliente.getCuentas().forEach(c -> {
+        List<Movimiento> movimientoList =
+            c.getMovimientos()
+                .stream()
+                .filter(
+                    m -> (m.getFecha().isAfter(fechaDesde) || m.getFecha().isEqual(fechaDesde)) &&
+                        (m.getFecha().isBefore(fechaHasta) || m.getFecha().isEqual(fechaHasta)))
+                .toList();
 
-    });
+        c.setMovimientos(movimientoList);
 
-    return cliente;
+      });
+
+      return cliente;
+
+    } catch (final Exception ex) {
+      throw new CoreBancarioSystemException(ex.getMessage(), ex.getCause());
+    }
   }
 }

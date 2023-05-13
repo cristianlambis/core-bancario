@@ -1,8 +1,11 @@
 package com.devsu.corebancario.controller;
 
+import com.devsu.corebancario.dto.ClienteDTO;
 import com.devsu.corebancario.model.Cliente;
+import com.devsu.corebancario.model.Cuenta;
 import com.devsu.corebancario.service.IClienteService;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +28,20 @@ public class ClienteController {
   private IClienteService clienteService;
 
   @PostMapping
-  public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente) {
+  public ResponseEntity<Cliente> crearCliente(@RequestBody ClienteDTO clienteDTO) {
+    Cliente cliente = new Cliente();
+    cliente.setClienteId(clienteDTO.getClienteId());
+    cliente.setContrasena(clienteDTO.getContrasena());
+    cliente.setEstado(clienteDTO.getEstado());
+    cliente.setId(clienteDTO.getId());
+    cliente.setNombre(clienteDTO.getNombre());
+    cliente.setGenero(clienteDTO.getGenero());
+    cliente.setEdad(clienteDTO.getEdad());
+    cliente.setIdentificacion(clienteDTO.getIdentificacion());
+    cliente.setDireccion(clienteDTO.getDireccion());
+    cliente.setTelefono(clienteDTO.getTelefono());
+    List<Cuenta> cuentas = new ArrayList<>();
+    cliente.setCuentas(cuentas);
     Cliente clienteCreado = clienteService.crearCliente(cliente);
     return ResponseEntity.created(URI.create("/clientes" + clienteCreado.getId()))
         .body(clienteCreado);
@@ -58,24 +74,25 @@ public class ClienteController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id,
-      @RequestBody Cliente cliente) {
+      @RequestBody ClienteDTO clienteDTO) {
+    Cliente cliente = new Cliente();
+    cliente.setClienteId(clienteDTO.getClienteId());
+    cliente.setContrasena(clienteDTO.getContrasena());
+    cliente.setEstado(clienteDTO.getEstado());
+    cliente.setId(clienteDTO.getId());
+    cliente.setNombre(clienteDTO.getNombre());
+    cliente.setGenero(clienteDTO.getGenero());
+    cliente.setEdad(clienteDTO.getEdad());
+    cliente.setIdentificacion(clienteDTO.getIdentificacion());
+    cliente.setDireccion(clienteDTO.getDireccion());
+    cliente.setTelefono(clienteDTO.getTelefono());
+    List<Cuenta> cuentas = new ArrayList<>();
+    cliente.setCuentas(cuentas);
     Cliente clienteActualizado = clienteService.actualizarCliente(id, cliente);
     if (clienteActualizado == null) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(clienteActualizado);
-
-
-  }
-
-  public ResponseEntity<Cliente> actualizarClienteParcial(@PathVariable Long id,
-      @RequestBody Map<String, Object> campos) {
-    Cliente clienteActualizado = clienteService.actualizarParcialmenteCliente(id, campos);
-    if (clienteActualizado == null) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok(clienteActualizado);
-
   }
 
 }

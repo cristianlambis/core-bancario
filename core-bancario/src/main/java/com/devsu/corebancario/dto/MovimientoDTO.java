@@ -5,12 +5,11 @@ import java.time.LocalDate;
 public class MovimientoDTO {
 
   private Long id;
+  private CuentaDTO cuenta;
   private LocalDate fecha;
   private String tipoMovimiento;
   private double valor;
   private double saldo;
-  private CuentaDTO cuenta;
-
 
   public MovimientoDTO() {
   }

@@ -34,6 +34,11 @@ public class CuentaServiceImpl implements ICuentaService {
   }
 
   @Override
+  public Optional<Cuenta> obtenerCuentaPorNumeroCuenta(String numeroCuenta) {
+    return Optional.ofNullable(cuentaRepository.findCuentaByNumeroCuenta(numeroCuenta));
+  }
+
+  @Override
   public Cuenta crearCuenta(Cuenta cuenta) {
     return cuentaRepository.save(cuenta);
   }
@@ -51,10 +56,6 @@ public class CuentaServiceImpl implements ICuentaService {
     return null;
   }
 
-  @Override
-  public Cuenta actualizarParcialmenteCuenta(Long id, Map<String, Object> campos) {
-    return null;
-  }
 
   @Override
   public void eliminarCuenta(Long id) {

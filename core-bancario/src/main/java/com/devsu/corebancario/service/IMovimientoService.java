@@ -14,8 +14,6 @@ public interface IMovimientoService {
 
   List<Movimiento> obtenerMovimientos();
 
-  Movimiento actualizarMovimiento(Long id, Movimiento movimiento);
-
   Movimiento actualizarParcialmenteMovimiento(Long id, Map<String, Object> campos);
 
   void eliminarMovimiento(Long id);

@@ -8,6 +8,7 @@ import com.devsu.corebancario.service.IMovimientoService;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/movimientos")
 public class MovimientoController {
-
 
   private final IMovimientoService movimientoService;
   private final ICuentaService cuentaService;
@@ -41,8 +41,14 @@ public class MovimientoController {
     movimiento.setFecha(movimientoDTO.getFecha());
     movimiento.setValor(movimientoDTO.getValor());
 
-    final Cuenta cuenta = cuentaService.obtenerCuentaPorId(movimientoDTO.getCuenta().getId()).get();
-    movimiento.setCuenta(cuenta);
+    final Optional<Cuenta> cuenta = cuentaService.obtenerCuentaPorNumeroCuenta(
+        movimientoDTO.getCuenta().getNumeroCuenta());
+
+    if (cuenta.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    movimiento.setCuenta(cuenta.get());
 
     Optional<Object> movimientoCreado = movimientoService.crearMovimiento(movimiento);
 
@@ -72,16 +78,6 @@ public class MovimientoController {
     return ResponseEntity.ok(movimientos);
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<Movimiento> actualizarMovimiento(@PathVariable Long id,
-      @RequestBody Movimiento movimiento) {
-    Movimiento movimientoActualizado = movimientoService.actualizarMovimiento(id, movimiento);
-    if (movimientoActualizado == null) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok(movimientoActualizado);
-  }
-
   @PatchMapping("/{id}")
   public ResponseEntity<Movimiento> actualizarParcialmenteMovimiento(@PathVariable Long id,
       @RequestBody Map<String, Object> campos) {
@@ -98,6 +94,4 @@ public class MovimientoController {
     movimientoService.eliminarMovimiento(id);
     return ResponseEntity.noContent().build();
   }
-
-
 }

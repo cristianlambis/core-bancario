@@ -4,6 +4,9 @@ import java.util.List;
 
 public class ClienteDTO {
 
+  private String clienteId;
+  private String contrasena;
+  private String estado;
   private Long id;
   private String nombre;
   private String genero;
@@ -11,14 +14,19 @@ public class ClienteDTO {
   private String identificacion;
   private String direccion;
   private String telefono;
-  private String clienteId;
   private List<CuentaDTO> cuentas;
+
+  private double saldo;
 
   public ClienteDTO() {
   }
 
-  public ClienteDTO(Long id, String nombre, String genero, Integer edad, String identificacion,
-      String direccion, String telefono) {
+  public ClienteDTO(String clienteId, String contrasena, String estado, Long id, String nombre,
+      String genero, Integer edad, String identificacion, String direccion, String telefono,
+      List<CuentaDTO> cuentas, double saldo) {
+    this.clienteId = clienteId;
+    this.contrasena = contrasena;
+    this.estado = estado;
     this.id = id;
     this.nombre = nombre;
     this.genero = genero;
@@ -26,6 +34,8 @@ public class ClienteDTO {
     this.identificacion = identificacion;
     this.direccion = direccion;
     this.telefono = telefono;
+    this.cuentas = cuentas;
+    this.saldo = saldo;
   }
 
   public Long getId() {
@@ -98,5 +108,29 @@ public class ClienteDTO {
 
   public void setCuentas(List<CuentaDTO> cuentas) {
     this.cuentas = cuentas;
+  }
+
+  public String getContrasena() {
+    return contrasena;
+  }
+
+  public void setContrasena(String contrasena) {
+    this.contrasena = contrasena;
+  }
+
+  public String getEstado() {
+    return estado;
+  }
+
+  public void setEstado(String estado) {
+    this.estado = estado;
+  }
+
+  public double getSaldo() {
+    return saldo;
+  }
+
+  public void setSaldo(double saldo) {
+    this.saldo = saldo;
   }
 }
