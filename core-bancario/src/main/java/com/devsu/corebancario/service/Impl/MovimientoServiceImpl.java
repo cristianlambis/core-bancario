@@ -1,8 +1,8 @@
 package com.devsu.corebancario.service.Impl;
 
 import com.devsu.corebancario.exception.CoreBancarioSystemException;
-import com.devsu.corebancario.model.Cuenta;
-import com.devsu.corebancario.model.Movimiento;
+import com.devsu.corebancario.model.Account;
+import com.devsu.corebancario.model.Movement;
 import com.devsu.corebancario.repository.MovimientoRepository;
 import com.devsu.corebancario.service.IMovimientoService;
 import java.util.List;
@@ -28,22 +28,22 @@ public class MovimientoServiceImpl implements IMovimientoService {
   }
 
   @Override
-  public Optional<Object> crearMovimiento(Movimiento movimiento) {
+  public Optional<Object> crearMovimiento(Movement movimiento) {
 
     try {
       double saldoTotal = 0;
-      final Cuenta cuenta = movimiento.getCuenta();
+      final Account cuenta = movimiento.getCuenta();
 
       if (Objects.isNull(cuenta.getSaldoInicial())) {
         return Optional.of(SALDO_NO_DISPONIBLE);
       }
 
       if (cuenta.getMovimientos().size() == 0) {
-        saldoTotal = hacerMovimiento(movimiento.getTipoMovimiento(), cuenta.getSaldoInicial(),
+        saldoTotal = hacerMovimiento(movimiento.getMovementType(), cuenta.getSaldoInicial(),
             movimiento.getValor());
       } else {
         double saldoUltimoMovimiento = obtenerUltimoMovimiento(cuenta.getMovimientos());
-        saldoTotal = hacerMovimiento(movimiento.getTipoMovimiento(), saldoUltimoMovimiento,
+        saldoTotal = hacerMovimiento(movimiento.getMovementType(), saldoUltimoMovimiento,
             movimiento.getValor());
       }
 
@@ -64,17 +64,17 @@ public class MovimientoServiceImpl implements IMovimientoService {
   }
 
   @Override
-  public Movimiento obtenerMovimientoPorId(Long id) {
+  public Movement obtenerMovimientoPorId(Long id) {
     return movimientoRepository.findById(id).orElse(null);
   }
 
   @Override
-  public List<Movimiento> obtenerMovimientos() {
+  public List<Movement> obtenerMovimientos() {
     return movimientoRepository.findAll();
   }
 
   @Override
-  public Movimiento actualizarParcialmenteMovimiento(Long id, Map<String, Object> campos) {
+  public Movement actualizarParcialmenteMovimiento(Long id, Map<String, Object> campos) {
     return null;
   }
 
@@ -85,12 +85,12 @@ public class MovimientoServiceImpl implements IMovimientoService {
   }
 
   @Override
-  public List<Movimiento> findAllMovimientosPorCuentaId(Long cuentaId) {
+  public List<Movement> findAllMovimientosPorCuentaId(Long cuentaId) {
     return movimientoRepository.findAllByCuenta_Id(cuentaId);
   }
 
-  private double obtenerUltimoMovimiento(List<Movimiento> movimientoList) {
-    Movimiento movimiento = movimientoList.stream().reduce((first, second) -> second)
+  private double obtenerUltimoMovimiento(List<Movement> movimientoList) {
+    Movement movimiento = movimientoList.stream().reduce((first, second) -> second)
         .orElse(null);
 
     return Objects.nonNull(movimiento) ? movimiento.getSaldo() : 0;
@@ -106,25 +106,25 @@ public class MovimientoServiceImpl implements IMovimientoService {
     return saldoTotal;
   }
 
-  private boolean validarSaldoExcedido(List<Movimiento> movimientoList, Movimiento movimiento) {
+  private boolean validarSaldoExcedido(List<Movement> movimientoList, Movement movimiento) {
 
     try {
       final AtomicReference<Double> saldoTotalDia = new AtomicReference<>((double) 0);
-      final List<Movimiento> movimientoLis =
+      final List<Movement> movimientoLis =
           movimientoList.stream()
-              .filter(m -> m.getFecha().isEqual(movimiento.getFecha())
-                  && m.getTipoMovimiento().equalsIgnoreCase("Debito"))
+              .filter(m -> m.getDate().isEqual(movimiento.getDate())
+                  && m.getMovementType().equalsIgnoreCase("Debito"))
               .toList();
 
       movimientoLis.forEach(mov -> {
         saldoTotalDia.set(saldoTotalDia.get() + mov.getValor());
       });
 
-      if (movimiento.getTipoMovimiento().equalsIgnoreCase("Debito")) {
+      if (movimiento.getMovementType().equalsIgnoreCase("Debito")) {
         saldoTotalDia.set(saldoTotalDia.get() + movimiento.getValor());
       }
 
-      logger.info("Saldo total en la fecha: {} es : {}", movimiento.getFecha(),
+      logger.info("Saldo total en la fecha: {} es : {}", movimiento.getDate(),
           saldoTotalDia.get());
       return saldoTotalDia.get() >= 1000 ? Boolean.TRUE : Boolean.FALSE;
     } catch (final Exception ex) {

@@ -2,12 +2,11 @@ package com.devsu.corebancario.controller;
 
 import com.devsu.corebancario.dto.ClienteDTO;
 import com.devsu.corebancario.model.Cliente;
-import com.devsu.corebancario.model.Cuenta;
+import com.devsu.corebancario.model.Account;
 import com.devsu.corebancario.service.IClienteService;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +34,12 @@ public class ClienteController {
     cliente.setEstado(clienteDTO.getEstado());
     cliente.setId(clienteDTO.getId());
     cliente.setNombre(clienteDTO.getNombre());
-    cliente.setGenero(clienteDTO.getGenero());
-    cliente.setEdad(clienteDTO.getEdad());
+    cliente.setGender(clienteDTO.getGenero());
+    cliente.setAge(clienteDTO.getEdad());
     cliente.setIdentificacion(clienteDTO.getIdentificacion());
-    cliente.setDireccion(clienteDTO.getDireccion());
-    cliente.setTelefono(clienteDTO.getTelefono());
-    List<Cuenta> cuentas = new ArrayList<>();
+    cliente.setAddress(clienteDTO.getDireccion());
+    cliente.setPhoneNumber(clienteDTO.getTelefono());
+    List<Account> cuentas = new ArrayList<>();
     cliente.setCuentas(cuentas);
     Cliente clienteCreado = clienteService.crearCliente(cliente);
     return ResponseEntity.created(URI.create("/clientes" + clienteCreado.getId()))
@@ -81,12 +80,12 @@ public class ClienteController {
     cliente.setEstado(clienteDTO.getEstado());
     cliente.setId(clienteDTO.getId());
     cliente.setNombre(clienteDTO.getNombre());
-    cliente.setGenero(clienteDTO.getGenero());
-    cliente.setEdad(clienteDTO.getEdad());
+    cliente.setGender(clienteDTO.getGenero());
+    cliente.setAge(clienteDTO.getEdad());
     cliente.setIdentificacion(clienteDTO.getIdentificacion());
-    cliente.setDireccion(clienteDTO.getDireccion());
-    cliente.setTelefono(clienteDTO.getTelefono());
-    List<Cuenta> cuentas = new ArrayList<>();
+    cliente.setAddress(clienteDTO.getDireccion());
+    cliente.setPhoneNumber(clienteDTO.getTelefono());
+    List<Account> cuentas = new ArrayList<>();
     cliente.setCuentas(cuentas);
     Cliente clienteActualizado = clienteService.actualizarCliente(id, cliente);
     if (clienteActualizado == null) {

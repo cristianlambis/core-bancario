@@ -1,14 +1,13 @@
 package com.devsu.corebancario.controller;
 
 import com.devsu.corebancario.dto.MovimientoDTO;
-import com.devsu.corebancario.model.Cuenta;
-import com.devsu.corebancario.model.Movimiento;
+import com.devsu.corebancario.model.Account;
+import com.devsu.corebancario.model.Movement;
 import com.devsu.corebancario.service.ICuentaService;
 import com.devsu.corebancario.service.IMovimientoService;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,12 +34,12 @@ public class MovimientoController {
   @PostMapping
   public ResponseEntity<Object> crearMovimiento(@RequestBody MovimientoDTO movimientoDTO) {
 
-    final Movimiento movimiento = new Movimiento();
-    movimiento.setTipoMovimiento(movimientoDTO.getTipoMovimiento());
-    movimiento.setFecha(movimientoDTO.getFecha());
+    final Movement movimiento = new Movement();
+    movimiento.setMovementType(movimientoDTO.getTipoMovimiento());
+    movimiento.setDate(movimientoDTO.getFecha());
     movimiento.setValor(movimientoDTO.getValor());
 
-    final Optional<Cuenta> cuenta = cuentaService.obtenerCuentaPorNumeroCuenta(
+    final Optional<Account> cuenta = cuentaService.obtenerCuentaPorNumeroCuenta(
         movimientoDTO.getCuenta().getNumeroCuenta());
 
     if (cuenta.isEmpty()) {
@@ -52,17 +50,17 @@ public class MovimientoController {
 
     Optional<Object> movimientoCreado = movimientoService.crearMovimiento(movimiento);
 
-    if (movimientoCreado.isEmpty() && movimientoCreado.get() instanceof Movimiento) {
+    if (movimientoCreado.isEmpty() && movimientoCreado.get() instanceof Movement) {
       return ResponseEntity.created(
-              URI.create("/movimientos/" + ((Movimiento) movimientoCreado.get()).getId()))
+              URI.create("/movimientos/" + ((Movement) movimientoCreado.get()).getId()))
           .body(movimientoCreado);
     }
     return ResponseEntity.ok(movimientoCreado.get());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Movimiento> obtenerMovimientoPorId(@PathVariable Long id) {
-    Movimiento movimiento = movimientoService.obtenerMovimientoPorId(id);
+  public ResponseEntity<Movement> obtenerMovimientoPorId(@PathVariable Long id) {
+    Movement movimiento = movimientoService.obtenerMovimientoPorId(id);
     if (movimiento == null) {
       return ResponseEntity.notFound().build();
     }
@@ -70,8 +68,8 @@ public class MovimientoController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Movimiento>> obtenerTodosLosMovimientos() {
-    List<Movimiento> movimientos = movimientoService.obtenerMovimientos();
+  public ResponseEntity<List<Movement>> obtenerTodosLosMovimientos() {
+    List<Movement> movimientos = movimientoService.obtenerMovimientos();
     if (movimientos.isEmpty()) {
       return ResponseEntity.noContent().build();
     }
@@ -79,9 +77,9 @@ public class MovimientoController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<Movimiento> actualizarParcialmenteMovimiento(@PathVariable Long id,
+  public ResponseEntity<Movement> actualizarParcialmenteMovimiento(@PathVariable Long id,
       @RequestBody Map<String, Object> campos) {
-    Movimiento movimientoActualizado = movimientoService.actualizarParcialmenteMovimiento(id,
+    Movement movimientoActualizado = movimientoService.actualizarParcialmenteMovimiento(id,
         campos);
     if (movimientoActualizado == null) {
       return ResponseEntity.notFound().build();

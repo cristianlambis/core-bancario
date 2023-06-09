@@ -1,12 +1,11 @@
 package com.devsu.corebancario.service.Impl;
 
 import com.devsu.corebancario.model.Cliente;
-import com.devsu.corebancario.model.Cuenta;
+import com.devsu.corebancario.model.Account;
 import com.devsu.corebancario.repository.CuentaRepository;
 import com.devsu.corebancario.repository.MovimientoRepository;
 import com.devsu.corebancario.service.ICuentaService;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -24,30 +23,30 @@ public class CuentaServiceImpl implements ICuentaService {
   }
 
   @Override
-  public List<Cuenta> obtenerCuentas() {
+  public List<Account> obtenerCuentas() {
     return cuentaRepository.findAll();
   }
 
   @Override
-  public Optional<Cuenta> obtenerCuentaPorId(Long id) {
+  public Optional<Account> obtenerCuentaPorId(Long id) {
     return cuentaRepository.findById(id);
   }
 
   @Override
-  public Optional<Cuenta> obtenerCuentaPorNumeroCuenta(String numeroCuenta) {
+  public Optional<Account> obtenerCuentaPorNumeroCuenta(String numeroCuenta) {
     return Optional.ofNullable(cuentaRepository.findCuentaByNumeroCuenta(numeroCuenta));
   }
 
   @Override
-  public Cuenta crearCuenta(Cuenta cuenta) {
+  public Account crearCuenta(Account cuenta) {
     return cuentaRepository.save(cuenta);
   }
 
   @Override
-  public Cuenta actualizarCuenta(Long id, Cuenta cuenta) {
-    Optional<Cuenta> cuentaOptional = cuentaRepository.findById(id);
+  public Account actualizarCuenta(Long id, Account cuenta) {
+    Optional<Account> cuentaOptional = cuentaRepository.findById(id);
     if (cuentaOptional.isPresent()) {
-      Cuenta cuentaActual = cuentaOptional.get();
+      Account cuentaActual = cuentaOptional.get();
       cuentaActual.setTipoCuenta(cuenta.getTipoCuenta());
       cuentaActual.setSaldoInicial(cuenta.getSaldoInicial());
       cuentaActual.setEstado(cuenta.getEstado());
@@ -64,7 +63,7 @@ public class CuentaServiceImpl implements ICuentaService {
   }
 
   @Override
-  public List<Cuenta> findCuentasByClienteId(Cliente cliente) {
+  public List<Account> findCuentasByClienteId(Cliente cliente) {
     return null;
   }
 

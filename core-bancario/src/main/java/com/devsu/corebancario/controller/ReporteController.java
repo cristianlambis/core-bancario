@@ -4,8 +4,8 @@ import com.devsu.corebancario.dto.ClienteDTO;
 import com.devsu.corebancario.dto.CuentaDTO;
 import com.devsu.corebancario.dto.MovimientoDTO;
 import com.devsu.corebancario.model.Cliente;
-import com.devsu.corebancario.model.Cuenta;
-import com.devsu.corebancario.model.Movimiento;
+import com.devsu.corebancario.model.Account;
+import com.devsu.corebancario.model.Movement;
 import com.devsu.corebancario.service.IClienteService;
 import com.devsu.corebancario.service.ICuentaService;
 import java.time.LocalDate;
@@ -53,7 +53,7 @@ public class ReporteController {
 
     List<CuentaDTO> cuentasDTO = new ArrayList<>();
 
-    for (Cuenta cuenta : cliente.getCuentas()) {
+    for (Account cuenta : cliente.getCuentas()) {
       CuentaDTO cuentaDTO = new CuentaDTO();
       cuentaDTO.setId(cuenta.getId());
       cuentaDTO.setTipoCuenta(cuenta.getTipoCuenta());
@@ -64,16 +64,16 @@ public class ReporteController {
       double saldoActual = cuenta.getSaldoInicial();
       List<MovimientoDTO> movimientosDTO = new ArrayList<>();
 
-      for (Movimiento m : cuenta.getMovimientos()) {
+      for (Movement m : cuenta.getMovimientos()) {
         MovimientoDTO movimientoDto = new MovimientoDTO();
         movimientoDto.setId(m.getId());
-        movimientoDto.setFecha(m.getFecha());
-        movimientoDto.setTipoMovimiento(m.getTipoMovimiento());
+        movimientoDto.setFecha(m.getDate());
+        movimientoDto.setTipoMovimiento(m.getMovementType());
         movimientoDto.setValor(m.getValor());
 
-        if ("Credito".equals(m.getTipoMovimiento())){
+        if ("Credito".equals(m.getMovementType())){
           saldoActual += m.getValor();
-        }else if ("Debito".equals(m.getTipoMovimiento())){
+        }else if ("Debito".equals(m.getMovementType())){
           saldoActual -=m.getValor();
         }
         movimientoDto.setSaldo(saldoActual);
@@ -83,13 +83,13 @@ public class ReporteController {
       cuentaDTO.setMovimientos(movimientosDTO);
       cuentaDTO.setTotalCreditos(cuenta.getMovimientos()
           .stream()
-          .filter(m -> "Credito".equals(m.getTipoMovimiento()))
-          .mapToDouble(Movimiento::getValor)
+          .filter(m -> "Credito".equals(m.getMovementType()))
+          .mapToDouble(Movement::getValor)
           .sum());
       cuentaDTO.setTotalDebitos(cuenta.getMovimientos()
           .stream()
-          .filter(m -> "Debito".equals(m.getTipoMovimiento()))
-          .mapToDouble(Movimiento::getValor)
+          .filter(m -> "Debito".equals(m.getMovementType()))
+          .mapToDouble(Movement::getValor)
           .sum());
       cuentaDTO.setSaldo(cuentaDTO.getSaldoInicial() + cuentaDTO.getTotalCreditos() - cuentaDTO.getTotalDebitos());
       cuentasDTO.add(cuentaDTO);

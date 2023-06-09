@@ -2,12 +2,11 @@ package com.devsu.corebancario.service.Impl;
 
 import com.devsu.corebancario.exception.CoreBancarioSystemException;
 import com.devsu.corebancario.model.Cliente;
-import com.devsu.corebancario.model.Movimiento;
+import com.devsu.corebancario.model.Movement;
 import com.devsu.corebancario.repository.ClienteRepository;
 import com.devsu.corebancario.service.IClienteService;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,11 +51,11 @@ public class ClienteServiceImpl implements IClienteService {
   public Cliente actualizarCliente(Long id, Cliente cliente) {
     Cliente clienteActual = obtenerClientePorId(id).get();
     clienteActual.setNombre(cliente.getNombre());
-    clienteActual.setGenero(cliente.getGenero());
-    clienteActual.setEdad(cliente.getEdad());
+    clienteActual.setGender(cliente.getGender());
+    clienteActual.setAge(cliente.getAge());
     clienteActual.setIdentificacion(cliente.getIdentificacion());
-    clienteActual.setDireccion(cliente.getDireccion());
-    clienteActual.setTelefono(cliente.getTelefono());
+    clienteActual.setAddress(cliente.getAddress());
+    clienteActual.setPhoneNumber(cliente.getPhoneNumber());
     clienteActual.setClienteId(cliente.getClienteId());
     clienteActual.setContrasena(cliente.getContrasena());
     clienteActual.setEstado(cliente.getEstado());
@@ -79,7 +78,7 @@ public class ClienteServiceImpl implements IClienteService {
       final Cliente cliente = this.obtenerClientePorClienteId(clienteId);
 
       cliente.getCuentas().forEach(c -> {
-        List<Movimiento> movimientoList =
+        List<Movement> movimientoList =
             c.getMovimientos()
                 .stream()
                 .filter(

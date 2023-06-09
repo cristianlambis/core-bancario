@@ -1,24 +1,24 @@
 package com.devsu.corebancario.service;
 
 
-import com.devsu.corebancario.model.Movimiento;
+import com.devsu.corebancario.model.Movement;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface IMovimientoService {
 
-  Optional<Object> crearMovimiento(Movimiento movimiento);
+  Optional<Object> crearMovimiento(Movement movimiento);
 
-  Movimiento obtenerMovimientoPorId(Long id);
+  Movement obtenerMovimientoPorId(Long id);
 
-  List<Movimiento> obtenerMovimientos();
+  List<Movement> obtenerMovimientos();
 
-  Movimiento actualizarParcialmenteMovimiento(Long id, Map<String, Object> campos);
+  Movement actualizarParcialmenteMovimiento(Long id, Map<String, Object> campos);
 
   void eliminarMovimiento(Long id);
 
-  List<Movimiento> findAllMovimientosPorCuentaId(Long cuentaId);
+  List<Movement> findAllMovimientosPorCuentaId(Long cuentaId);
 
 
 }

@@ -1,27 +1,26 @@
 package com.devsu.corebancario.service;
 
 import com.devsu.corebancario.model.Cliente;
-import com.devsu.corebancario.model.Cuenta;
+import com.devsu.corebancario.model.Account;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface ICuentaService {
 
-  List<Cuenta> obtenerCuentas();
+  List<Account> obtenerCuentas();
 
-  Optional<Cuenta> obtenerCuentaPorId(Long id);
+  Optional<Account> obtenerCuentaPorId(Long id);
 
-  Optional<Cuenta> obtenerCuentaPorNumeroCuenta(String numeroCuenta);
+  Optional<Account> obtenerCuentaPorNumeroCuenta(String numeroCuenta);
 
-  Cuenta crearCuenta(Cuenta cuenta);
+  Account crearCuenta(Account cuenta);
 
-  Cuenta actualizarCuenta(Long id, Cuenta cuenta);
+  Account actualizarCuenta(Long id, Account cuenta);
 
 
   void eliminarCuenta(Long id);
 
-  List<Cuenta> findCuentasByClienteId(Cliente cliente);
+  List<Account> findCuentasByClienteId(Cliente cliente);
 
 
 }
